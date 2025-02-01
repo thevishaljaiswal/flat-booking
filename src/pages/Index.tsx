@@ -8,16 +8,20 @@ import { useState } from "react";
 
 const Index = () => {
   const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
   // Get all units across all buildings
   const allUnits = buildings.flatMap(building => 
     building.floors.flatMap(floor => floor.units)
   );
 
-  // Filter units based on selected type
+  // Filter units based on selected type and status
   const getFilteredUnits = (units: typeof allUnits) => {
-    if (selectedType === "all") return units;
-    return units.filter(unit => unit.type === selectedType);
+    return units.filter(unit => {
+      const matchesType = selectedType === "all" || unit.type === selectedType;
+      const matchesStatus = selectedStatus === "all" || unit.status === selectedStatus;
+      return matchesType && matchesStatus;
+    });
   };
 
   return (
@@ -26,16 +30,29 @@ const Index = () => {
       
       <div className="flex items-center justify-between mb-8">
         <UnitSummary units={getFilteredUnits(allUnits)} />
-        <Select value={selectedType} onValueChange={setSelectedType}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="2BHK">2 BHK</SelectItem>
-            <SelectItem value="3BHK">3 BHK</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-4">
+          <Select value={selectedType} onValueChange={setSelectedType}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="2BHK">2 BHK</SelectItem>
+              <SelectItem value="3BHK">3 BHK</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="booked">Booked</SelectItem>
+              <SelectItem value="hold">Hold</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       
       <Tabs defaultValue={buildings[0].id} className="w-full">
