@@ -24,21 +24,18 @@ const Index = () => {
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Flat Unit Booking</h1>
       
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <h2 className="text-xl font-semibold">Project Summary</h2>
-          <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="2BHK">2 BHK</SelectItem>
-              <SelectItem value="3BHK">3 BHK</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="flex items-center justify-between mb-8">
         <UnitSummary units={getFilteredUnits(allUnits)} />
+        <Select value={selectedType} onValueChange={setSelectedType}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="2BHK">2 BHK</SelectItem>
+            <SelectItem value="3BHK">3 BHK</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <Tabs defaultValue={buildings[0].id} className="w-full">
