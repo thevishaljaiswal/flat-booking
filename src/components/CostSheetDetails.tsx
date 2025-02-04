@@ -10,23 +10,23 @@ interface CostSheetDetailsProps {
 }
 
 const PAYMENT_SCHEDULE = [
-  { milestone: "ZAPP", percentage: 5.00, description: "On Signing of Application" },
-  { milestone: "ZOTA", percentage: 5.00, description: "Within 7 days from date of Offer letter" },
-  { milestone: "ZEXC", percentage: 10.00, description: "Excavation" },
-  { milestone: "ZFDN", percentage: 10.00, description: "Foundation" },
-  { milestone: "ZRTW", percentage: 10.00, description: "Retaining Wall" },
-  { milestone: "Z1SL", percentage: 7.00, description: "1st slab" },
-  { milestone: "Z6SL", percentage: 7.00, description: "6th slab" },
-  { milestone: "Z12S", percentage: 4.00, description: "12th slab" },
-  { milestone: "Z20S", percentage: 4.00, description: "20th slab" },
-  { milestone: "Z28S", percentage: 4.00, description: "28th slab" },
-  { milestone: "ZTSL", percentage: 4.00, description: "Terrace slab" },
-  { milestone: "ZBLK", percentage: 5.00, description: "Blockwork" },
-  { milestone: "ZIPL", percentage: 5.00, description: "Internal Plaster" },
-  { milestone: "ZTIL", percentage: 5.00, description: "Tiling" },
-  { milestone: "ZWIN", percentage: 5.00, description: "Fixing of the Windows" },
-  { milestone: "ZLWT", percentage: 5.00, description: "Lift,Waterpump,Transformer & Others" },
-  { milestone: "ZPOS", percentage: 5.00, description: "Possession" },
+  { date: "01.09.2024", percentage: 5.00, description: "On Signing of Application" },
+  { date: "08.09.2024", percentage: 5.00, description: "Within 7 days from date of Offer letter" },
+  { date: "22.09.2024", percentage: 10.00, description: "Excavation" },
+  { date: "22.10.2024", percentage: 10.00, description: "Foundation" },
+  { date: "22.11.2024", percentage: 10.00, description: "Retaining Wall" },
+  { date: "22.12.2024", percentage: 7.00, description: "1st slab" },
+  { date: "22.01.2025", percentage: 7.00, description: "6th slab" },
+  { date: "22.02.2025", percentage: 4.00, description: "12th slab" },
+  { date: "22.03.2025", percentage: 4.00, description: "20th slab" },
+  { date: "22.04.2025", percentage: 4.00, description: "28th slab" },
+  { date: "22.05.2025", percentage: 4.00, description: "Terrace slab" },
+  { date: "22.06.2025", percentage: 5.00, description: "Blockwork" },
+  { date: "22.07.2025", percentage: 5.00, description: "Internal Plaster" },
+  { date: "22.08.2025", percentage: 5.00, description: "Tiling" },
+  { date: "22.09.2025", percentage: 5.00, description: "Fixing of the Windows" },
+  { date: "22.10.2025", percentage: 5.00, description: "Lift,Waterpump,Transformer & Others" },
+  { date: "22.11.2025", percentage: 5.00, description: "Possession" },
 ];
 
 const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
@@ -187,19 +187,19 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Milestone</TableHead>
-                  <TableHead className="w-[100px] text-right">Percentage</TableHead>
+                <TableRow className="text-xs">
+                  <TableHead className="w-[100px]">Date</TableHead>
+                  <TableHead className="w-[80px] text-right">Percentage</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead className="text-right">Amount (₹)</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className="text-xs">
                 {PAYMENT_SCHEDULE.map((item) => {
                   const amount = (total * (item.percentage / 100));
                   return (
-                    <TableRow key={item.milestone}>
-                      <TableCell className="font-medium">{item.milestone}</TableCell>
+                    <TableRow key={item.date}>
+                      <TableCell>{item.date}</TableCell>
                       <TableCell className="text-right">{item.percentage.toFixed(2)}%</TableCell>
                       <TableCell>{item.description}</TableCell>
                       <TableCell className="text-right">{amount.toLocaleString('en-IN', {
@@ -210,7 +210,7 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
                     </TableRow>
                   );
                 })}
-                <TableRow className="font-bold">
+                <TableRow className="font-bold text-xs">
                   <TableCell>Total</TableCell>
                   <TableCell className="text-right">100.00%</TableCell>
                   <TableCell></TableCell>

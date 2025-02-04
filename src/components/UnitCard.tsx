@@ -2,14 +2,14 @@ import { UnitType } from "@/data/buildingData";
 import { cn } from "@/lib/utils";
 import { Building, CircleDot } from "lucide-react";
 import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import CostSheetForm from "./CostSheetForm";
+import { useNavigate } from "react-router-dom";
 
 interface UnitCardProps {
   unit: UnitType;
 }
 
 const UnitCard = ({ unit }: UnitCardProps) => {
+  const navigate = useNavigate();
   const statusColors = {
     booked: "bg-green-100 text-green-800 border-green-300",
     available: "bg-blue-100 text-blue-800 border-blue-300",
@@ -43,17 +43,13 @@ const UnitCard = ({ unit }: UnitCardProps) => {
         </div>
       </div>
       <div className="mt-4">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="w-full">Cost Sheet</Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Cost Sheet Details</DialogTitle>
-            </DialogHeader>
-            <CostSheetForm unit={unit} />
-          </DialogContent>
-        </Dialog>
+        <Button 
+          variant="outline" 
+          className="w-full"
+          onClick={() => navigate('/cost-sheet', { state: { unit } })}
+        >
+          Cost Sheet
+        </Button>
       </div>
     </div>
   );
