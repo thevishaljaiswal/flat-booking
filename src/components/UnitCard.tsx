@@ -52,7 +52,7 @@ const UnitCard = ({ unit }: UnitCardProps) => {
               <DialogTitle>Cost Sheet Details</DialogTitle>
             </DialogHeader>
             <CostSheetForm unit={unit} />
-          </DialogHeader>
+          </DialogContent>
         </Dialog>
       </div>
     </div>
