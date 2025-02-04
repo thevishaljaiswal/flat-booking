@@ -1,6 +1,9 @@
 import { UnitType } from "@/data/buildingData";
 import { cn } from "@/lib/utils";
 import { Building, CircleDot } from "lucide-react";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import CostSheetForm from "./CostSheetForm";
 
 interface UnitCardProps {
   unit: UnitType;
@@ -38,6 +41,19 @@ const UnitCard = ({ unit }: UnitCardProps) => {
           <span className="text-gray-600">Value:</span>
           <span className="font-medium">₹{(unit.value / 100000).toFixed(2)} L</span>
         </div>
+      </div>
+      <div className="mt-4">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="w-full">Cost Sheet</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Cost Sheet Details</DialogTitle>
+            </DialogHeader>
+            <CostSheetForm unit={unit} />
+          </DialogHeader>
+        </Dialog>
       </div>
     </div>
   );
