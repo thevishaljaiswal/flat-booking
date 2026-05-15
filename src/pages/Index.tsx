@@ -37,7 +37,7 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="container mx-auto py-6 px-4">
+      <div className="container mx-auto py-4 px-4">
         <Tabs defaultValue={buildings[0].id} className="w-full">
           {/* Tower tabs + filters in one row */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-6">
@@ -88,14 +88,14 @@ const Index = () => {
             return (
               <TabsContent key={building.id} value={building.id} className="mt-0">
                 <UnitSummary units={filteredBuildingUnits} />
-                <ScrollArea className="h-[calc(100vh-380px)] pr-4">
+                <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-3 max-h-[calc(100vh-300px)] overflow-auto">
                   {building.floors.map((floor) => (
                     <FloorUnits
                       key={floor.floorNumber}
                       floor={{ ...floor, units: getFilteredUnits(floor.units) }}
                     />
                   ))}
-                </ScrollArea>
+                </div>
               </TabsContent>
             );
           })}
