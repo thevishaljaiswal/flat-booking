@@ -1,6 +1,6 @@
 import { UnitType } from "@/data/buildingData";
 import { cn } from "@/lib/utils";
-import { Building, CircleDot } from "lucide-react";
+import { Home, Maximize2, IndianRupee, ArrowRight, BedDouble } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -8,47 +8,87 @@ interface UnitCardProps {
   unit: UnitType;
 }
 
+const statusStyles = {
+  available: {
+    badge: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+    dot: "bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.18)]",
+    accent: "from-emerald-400 to-teal-500",
+    glow: "group-hover:shadow-emerald-200/60",
+  },
+  booked: {
+    badge: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
+    dot: "bg-rose-500 shadow-[0_0_0_3px_rgba(244,63,94,0.18)]",
+    accent: "from-rose-400 to-pink-500",
+    glow: "group-hover:shadow-rose-200/60",
+  },
+  hold: {
+    badge: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+    dot: "bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.18)]",
+    accent: "from-amber-400 to-orange-500",
+    glow: "group-hover:shadow-amber-200/60",
+  },
+} as const;
+
 const UnitCard = ({ unit }: UnitCardProps) => {
   const navigate = useNavigate();
-  const statusColors = {
-    booked: "bg-green-100 text-green-800 border-green-300",
-    available: "bg-blue-100 text-blue-800 border-blue-300",
-    hold: "bg-gray-100 text-gray-800 border-gray-300",
-  };
+  const s = statusStyles[unit.status];
+  const isAvailable = unit.status === "available";
 
   return (
-    <div className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Building className="w-4 h-4" />
-          <span className="font-semibold">{unit.unitNumber}</span>
+    <div
+      className={cn(
+        "group relative overflow-hidden rounded-2xl bg-white border border-slate-200/80",
+        "shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300",
+        s.glow
+      )}
+    >
+      {/* Top accent stripe */}
+      <div className={cn("h-1 w-full bg-gradient-to-r", s.accent)} />
+
+      <div className="p-5">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <p className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Unit</p>
+            <h3 className="text-lg font-bold text-slate-900 leading-tight">{unit.unitNumber}</h3>
+          </div>
+          <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold", s.badge)}>
+            <span className={cn("w-1.5 h-1.5 rounded-full", s.dot)} />
+            {unit.status.charAt(0).toUpperCase() + unit.status.slice(1)}
+          </div>
         </div>
-        <div className={cn("px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1", statusColors[unit.status])}>
-          <CircleDot className="w-3 h-3" />
-          {unit.status.charAt(0).toUpperCase() + unit.status.slice(1)}
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="rounded-lg bg-slate-50 p-2.5 text-center">
+            <BedDouble className="w-3.5 h-3.5 text-slate-400 mx-auto mb-1" />
+            <p className="text-[10px] text-slate-500">Type</p>
+            <p className="text-xs font-semibold text-slate-900">{unit.type}</p>
+          </div>
+          <div className="rounded-lg bg-slate-50 p-2.5 text-center">
+            <Maximize2 className="w-3.5 h-3.5 text-slate-400 mx-auto mb-1" />
+            <p className="text-[10px] text-slate-500">Carpet</p>
+            <p className="text-xs font-semibold text-slate-900">{unit.carpetArea}<span className="text-[9px] text-slate-400 ml-0.5">sqft</span></p>
+          </div>
+          <div className="rounded-lg bg-slate-50 p-2.5 text-center">
+            <IndianRupee className="w-3.5 h-3.5 text-slate-400 mx-auto mb-1" />
+            <p className="text-[10px] text-slate-500">Value</p>
+            <p className="text-xs font-semibold text-slate-900">{(unit.value / 100000).toFixed(1)}<span className="text-[9px] text-slate-400 ml-0.5">L</span></p>
+          </div>
         </div>
-      </div>
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span className="text-gray-600">Type:</span>
-          <span className="font-medium">{unit.type}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Carpet Area:</span>
-          <span className="font-medium">{unit.carpetArea} sq.ft</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Value:</span>
-          <span className="font-medium">₹{(unit.value / 100000).toFixed(2)} L</span>
-        </div>
-      </div>
-      <div className="mt-4">
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={() => navigate('/cost-sheet', { state: { unit } })}
+
+        {/* CTA */}
+        <Button
+          onClick={() => navigate("/cost-sheet", { state: { unit } })}
+          className={cn(
+            "w-full h-9 text-xs font-semibold rounded-lg group/btn",
+            isAvailable
+              ? "bg-gradient-to-r from-slate-900 to-slate-700 hover:from-slate-800 hover:to-slate-600 text-white"
+              : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+          )}
         >
-          Cost Sheet
+          View Cost Sheet
+          <ArrowRight className="w-3.5 h-3.5 ml-1 group-hover/btn:translate-x-0.5 transition-transform" />
         </Button>
       </div>
     </div>
