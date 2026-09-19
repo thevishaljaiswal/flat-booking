@@ -1,36 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { UnitType } from "@/data/buildingData";
+import { SCHEMES, VOUCHERS, OFFERS } from "@/data/schemes";
 import { Input } from "./ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
-import { Building2, Home, Maximize2, Receipt, CalendarDays, IndianRupee, Pencil } from "lucide-react";
+import {
+  Building2,
+  Home,
+  Maximize2,
+  Receipt,
+  CalendarDays,
+  IndianRupee,
+  Pencil,
+  Sparkles,
+  Gift,
+  Check,
+  Clock,
+  Coins,
+  FileCheck2,
+  Wallet,
+  Smartphone,
+} from "lucide-react";
 
 interface CostSheetDetailsProps {
   unit: UnitType;
 }
-
-const PAYMENT_SCHEDULE = [
-  { date: "01.09.2024", percentage: 5.0, description: "On Signing of Application" },
-  { date: "08.09.2024", percentage: 5.0, description: "Within 7 days from date of Offer letter" },
-  { date: "22.09.2024", percentage: 10.0, description: "Excavation" },
-  { date: "22.10.2024", percentage: 10.0, description: "Foundation" },
-  { date: "22.11.2024", percentage: 10.0, description: "Retaining Wall" },
-  { date: "22.12.2024", percentage: 7.0, description: "1st slab" },
-  { date: "22.01.2025", percentage: 7.0, description: "6th slab" },
-  { date: "22.02.2025", percentage: 4.0, description: "12th slab" },
-  { date: "22.03.2025", percentage: 4.0, description: "20th slab" },
-  { date: "22.04.2025", percentage: 4.0, description: "28th slab" },
-  { date: "22.05.2025", percentage: 4.0, description: "Terrace slab" },
-  { date: "22.06.2025", percentage: 5.0, description: "Blockwork" },
-  { date: "22.07.2025", percentage: 5.0, description: "Internal Plaster" },
-  { date: "22.08.2025", percentage: 5.0, description: "Tiling" },
-  { date: "22.09.2025", percentage: 5.0, description: "Fixing of the Windows" },
-  { date: "22.10.2025", percentage: 5.0, description: "Lift,Waterpump,Transformer & Others" },
-  { date: "22.11.2025", percentage: 5.0, description: "Possession" },
-];
 
 const formatINR = (value: number) =>
   value.toLocaleString("en-IN", {
@@ -39,12 +36,30 @@ const formatINR = (value: number) =>
     currency: "INR",
   });
 
+const VOUCHER_ICONS: Record<string, typeof Coins> = {
+  gold: Coins,
+  registration: FileCheck2,
+  cashback: Wallet,
+  iphone: Smartphone,
+};
+
 const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
   const [baseRate, setBaseRate] = useState(7000);
-  const [total, setTotal] = useState(0);
+  const [schemeId, setSchemeId] = useState("standard");
+  const [offerId, setOfferId] = useState<string | null>(null);
+  const [voucherIds, setVoucherIds] = useState<string[]>([]);
 
-  const calculateCosts = (newBaseRate: number) => {
-    const flatCost = unit.carpetArea * newBaseRate;
+  const scheme = SCHEMES.find((s) => s.id === schemeId)!;
+  const offer = OFFERS.find((o) => o.id === offerId) ?? null;
+  const selectedVouchers = VOUCHERS.filter((v) => voucherIds.includes(v.id));
+  const voucherValue = selectedVouchers.reduce((sum, v) => sum + v.value, 0);
+
+  const discountPct = scheme.discountPct + (offer?.discountPct ?? 0);
+
+  const calculateCosts = (rate: number) => {
+    const grossFlatCost = unit.carpetArea * rate;
+    const schemeDiscount = grossFlatCost * (discountPct / 100);
+    const flatCost = grossFlatCost - schemeDiscount;
     const msebCharges = 20000;
     const grossValue = flatCost + msebCharges;
     const gstDiscount = grossValue * 0.06;
@@ -56,6 +71,8 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
     const subTotal2 = stampDuty + registrationCharges + gst + legalCharges;
 
     return {
+      grossFlatCost,
+      schemeDiscount,
       flatCost,
       msebCharges,
       grossValue,
@@ -70,43 +87,32 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
     };
   };
 
-  useEffect(() => {
-    const costs = calculateCosts(baseRate);
-    setTotal(costs.total);
-  }, [baseRate, unit.carpetArea]);
+  const costs = useMemo(() => calculateCosts(baseRate), [baseRate, unit.carpetArea, discountPct]);
+  const total = costs.total;
 
-  const handleBaseRateChange = (value: string) => {
-    setBaseRate(parseFloat(value) || 0);
-  };
+  const handleBaseRateChange = (value: string) => setBaseRate(parseFloat(value) || 0);
 
   const handleTotalChange = (value: string) => {
     const targetTotal = parseFloat(value) || 0;
     let low = 0;
     let high = 100000;
-    let mid;
     while (low <= high) {
-      mid = Math.floor((low + high) / 2);
-      const costs = calculateCosts(mid);
-      if (Math.abs(costs.total - targetTotal) < 1) {
+      const mid = Math.floor((low + high) / 2);
+      const c = calculateCosts(mid);
+      if (Math.abs(c.total - targetTotal) < 1) {
         setBaseRate(mid);
-        break;
+        return;
       }
-      if (costs.total < targetTotal) low = mid + 1;
+      if (c.total < targetTotal) low = mid + 1;
       else high = mid - 1;
     }
+    setBaseRate(Math.max(low, 0));
   };
 
-  const costs = calculateCosts(baseRate);
+  const toggleVoucher = (id: string) =>
+    setVoucherIds((prev) => (prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]));
 
-  const Row = ({
-    label,
-    value,
-    muted = false,
-  }: {
-    label: string;
-    value: string;
-    muted?: boolean;
-  }) => (
+  const Row = ({ label, value, muted = false }: { label: string; value: string; muted?: boolean }) => (
     <div className="flex justify-between items-center py-1.5">
       <span className={`text-sm ${muted ? "text-muted-foreground" : ""}`}>{label}</span>
       <span className="text-sm font-medium tabular-nums">{value}</span>
@@ -128,7 +134,7 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
                   <h2 className="text-2xl font-semibold tracking-tight">Unit {unit.unitNumber}</h2>
                   <Badge variant="secondary" className="uppercase">{unit.status}</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground mt-0.5">Cost sheet & payment schedule</p>
+                <p className="text-sm text-muted-foreground mt-0.5">Cost sheet, schemes & payment schedule</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-6">
@@ -159,9 +165,12 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
       </Card>
 
       <Tabs defaultValue="costsheet" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-2xl grid-cols-3">
           <TabsTrigger value="costsheet" className="gap-2">
             <Receipt className="h-4 w-4" /> Cost Sheet
+          </TabsTrigger>
+          <TabsTrigger value="schemes" className="gap-2">
+            <Sparkles className="h-4 w-4" /> Schemes & Offers
           </TabsTrigger>
           <TabsTrigger value="schedule" className="gap-2">
             <CalendarDays className="h-4 w-4" /> Payment Schedule
@@ -171,7 +180,6 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
         {/* Cost Sheet */}
         <TabsContent value="costsheet" className="mt-4">
           <div className="grid gap-4 lg:grid-cols-3">
-            {/* Editable inputs */}
             <Card className="lg:col-span-1">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -204,23 +212,32 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
                 <Separator />
                 <div className="rounded-lg bg-muted/50 p-3 space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Sub-Total 1</span>
-                    <span className="font-medium tabular-nums">{formatINR(costs.subTotal1)}</span>
+                    <span className="text-muted-foreground">Scheme</span>
+                    <span className="font-medium">{scheme.name}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Sub-Total 2</span>
-                    <span className="font-medium tabular-nums">{formatINR(costs.subTotal2)}</span>
+                    <span className="text-muted-foreground">Offer</span>
+                    <span className="font-medium">{offer ? offer.name : "None"}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Total Discount</span>
+                    <span className="font-medium tabular-nums">{discountPct.toFixed(2)}%</span>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between">
                     <span className="text-sm font-semibold">Grand Total</span>
-                    <span className="text-sm font-bold text-primary tabular-nums">{formatINR(costs.total)}</span>
+                    <span className="text-sm font-bold text-primary tabular-nums">{formatINR(total)}</span>
                   </div>
+                  {voucherValue > 0 && (
+                    <div className="flex justify-between text-xs pt-1">
+                      <span className="text-muted-foreground">Voucher Benefits</span>
+                      <span className="font-medium tabular-nums">{formatINR(voucherValue)}</span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Breakdown */}
             <Card className="lg:col-span-2">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">Cost Breakdown</CardTitle>
@@ -228,11 +245,17 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
               <CardContent>
                 <div className="rounded-lg border divide-y">
                   <div className="p-4 space-y-1">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
-                      Agreement Value
-                    </p>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Agreement Value</p>
                     <Row label="Carpet Area" value={`${unit.carpetArea} Sq.Ft`} muted />
-                    <Row label="Flat Cost" value={formatINR(costs.flatCost)} />
+                    <Row label="Flat Cost (at base rate)" value={formatINR(costs.grossFlatCost)} />
+                    {discountPct > 0 && (
+                      <Row
+                        label={`Scheme / Offer Discount @ ${discountPct.toFixed(2)}%`}
+                        value={`- ${formatINR(costs.schemeDiscount)}`}
+                        muted
+                      />
+                    )}
+                    <Row label="Net Flat Cost" value={formatINR(costs.flatCost)} />
                     <Row label="MSEB / GED Charges" value={formatINR(costs.msebCharges)} />
                     <Row label="Gross Consideration Value" value={formatINR(costs.grossValue)} />
                     <Row label="Input Credit on GST Discount @ 6%" value={`- ${formatINR(costs.gstDiscount)}`} muted />
@@ -243,9 +266,7 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
                   </div>
 
                   <div className="p-4 space-y-1">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
-                      Other Charges
-                    </p>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Other Charges</p>
                     <Row label="Stamp Duty" value={formatINR(costs.stampDuty)} />
                     <Row label="Registration Charges" value={formatINR(costs.registrationCharges)} />
                     <Row label="GST" value={formatINR(costs.gst)} />
@@ -268,12 +289,144 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
           </div>
         </TabsContent>
 
+        {/* Schemes & Offers */}
+        <TabsContent value="schemes" className="mt-4 space-y-4">
+          {/* Payment schemes */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" /> Payment Schemes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                {SCHEMES.map((s) => {
+                  const active = s.id === schemeId;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setSchemeId(s.id)}
+                      className={`text-left rounded-xl border p-3 transition-all ${
+                        active
+                          ? "border-primary bg-primary/10 ring-2 ring-primary/30 shadow-sm"
+                          : "hover:border-primary/40 hover:bg-muted/50"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-sm font-semibold leading-tight">{s.name}</p>
+                        {active && <Check className="h-4 w-4 text-primary shrink-0" />}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1">{s.tagline}</p>
+                      {s.discountPct > 0 && (
+                        <Badge variant="secondary" className="mt-2 text-[10px]">
+                          {s.discountPct}% price benefit
+                        </Badge>
+                      )}
+                      <ul className="mt-2 space-y-0.5">
+                        {s.benefits.map((b) => (
+                          <li key={b} className="text-[11px] text-muted-foreground flex gap-1">
+                            <span className="text-primary">•</span> {b}
+                          </li>
+                        ))}
+                      </ul>
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Offers */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" /> Limited Period Booking Offers
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {OFFERS.map((o) => {
+                  const active = o.id === offerId;
+                  return (
+                    <button
+                      key={o.id}
+                      type="button"
+                      onClick={() => setOfferId(active ? null : o.id)}
+                      className={`rounded-xl border p-3 text-left transition-all ${
+                        active
+                          ? "border-primary bg-primary/10 ring-2 ring-primary/30 shadow-sm"
+                          : "hover:border-primary/40 hover:bg-muted/50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold">{o.name}</p>
+                        {active && <Check className="h-4 w-4 text-primary" />}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">Valid: {o.window}</p>
+                      <p className="text-lg font-bold text-primary mt-1 tabular-nums">{o.discountPct}% off</p>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-3">
+                Click a selected offer again to remove it. Offer discount adds to the scheme benefit.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Vouchers */}
+          <Card>
+            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Gift className="h-4 w-4 text-primary" /> Vouchers
+              </CardTitle>
+              <Badge variant="outline" className="text-xs">
+                Selected value {formatINR(voucherValue)}
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {VOUCHERS.map((v) => {
+                  const active = voucherIds.includes(v.id);
+                  const Icon = VOUCHER_ICONS[v.id] ?? Gift;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => toggleVoucher(v.id)}
+                      className={`relative text-left rounded-xl border border-dashed p-3 transition-all ${
+                        active
+                          ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                          : "hover:border-primary/40 hover:bg-muted/50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <p className="text-sm font-semibold leading-tight">{v.name}</p>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-2">{v.detail}</p>
+                      <p className="text-sm font-bold text-primary mt-1 tabular-nums">{formatINR(v.value)}</p>
+                      <p className="text-[10px] text-muted-foreground mt-1 italic">{v.condition}</p>
+                      {active && (
+                        <Check className="h-4 w-4 text-primary absolute top-3 right-3" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Payment Schedule */}
         <TabsContent value="schedule" className="mt-4">
           <Card>
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
-              <CardTitle className="text-base">Construction-Linked Payment Plan</CardTitle>
-              <Badge variant="outline" className="text-xs">{PAYMENT_SCHEDULE.length} Milestones</Badge>
+              <CardTitle className="text-base">{scheme.name} — Payment Plan</CardTitle>
+              <Badge variant="outline" className="text-xs">{scheme.schedule.length} Milestones</Badge>
             </CardHeader>
             <CardContent>
               <div className="rounded-lg border overflow-hidden">
@@ -288,10 +441,10 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {PAYMENT_SCHEDULE.map((item, idx) => {
+                    {scheme.schedule.map((item, idx) => {
                       const amount = total * (item.percentage / 100);
                       return (
-                        <TableRow key={item.date} className="text-xs">
+                        <TableRow key={`${item.date}-${idx}`} className="text-xs">
                           <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
                           <TableCell className="font-medium">{item.date}</TableCell>
                           <TableCell>{item.description}</TableCell>
@@ -300,9 +453,7 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
                               {item.percentage.toFixed(2)}%
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-right tabular-nums font-medium">
-                            {formatINR(amount)}
-                          </TableCell>
+                          <TableCell className="text-right tabular-nums font-medium">{formatINR(amount)}</TableCell>
                         </TableRow>
                       );
                     })}
@@ -310,9 +461,7 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
                       <TableCell colSpan={2} className="text-sm">Total</TableCell>
                       <TableCell></TableCell>
                       <TableCell className="text-right text-sm">100.00%</TableCell>
-                      <TableCell className="text-right text-sm text-primary tabular-nums">
-                        {formatINR(total)}
-                      </TableCell>
+                      <TableCell className="text-right text-sm text-primary tabular-nums">{formatINR(total)}</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
