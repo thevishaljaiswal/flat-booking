@@ -1,5 +1,5 @@
 import { UnitType } from "@/data/buildingData";
-import { CheckCircle2, XCircle, Clock, LayoutGrid } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, LayoutGrid, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UnitSummaryProps {
@@ -10,6 +10,7 @@ const UnitSummary = ({ units }: UnitSummaryProps) => {
   const available = units.filter((u) => u.status === "available").length;
   const booked = units.filter((u) => u.status === "booked").length;
   const hold = units.filter((u) => u.status === "hold").length;
+  const allocated = units.filter((u) => u.status === "allocated").length;
   const total = units.length;
   const pct = (v: number) => (total > 0 ? Math.round((v / total) * 100) : 0);
 
@@ -50,10 +51,19 @@ const UnitSummary = ({ units }: UnitSummaryProps) => {
       iconColor: "text-amber-700",
       text: "text-amber-900",
     },
+    {
+      label: "Allocated",
+      value: allocated,
+      pct: pct(allocated),
+      icon: UserCheck,
+      bg: "bg-indigo-100 border-indigo-200",
+      iconColor: "text-indigo-700",
+      text: "text-indigo-900",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
       {stats.map((s) => {
         const Icon = s.icon;
         return (
