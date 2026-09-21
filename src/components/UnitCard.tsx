@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { formatCountdown, useUnits } from "@/context/UnitsContext";
 import EOIDialog from "./EOIDialog";
+import { Users } from "lucide-react";
 
 interface UnitCardProps {
   unit: UnitType;
@@ -88,6 +89,10 @@ const UnitCard = ({ unit }: UnitCardProps) => {
           </div>
           <div className="flex items-center justify-between gap-1 mt-0.5">
             <span className={cn("text-[9px] font-semibold", s.sub)}>{unit.type}</span>
+            <span className="flex items-center gap-0.5 text-[9px] font-semibold text-sky-700" title={`${unit.interestedLeads} leads interested in this unit`}>
+              <Users className="w-2.5 h-2.5" />
+              {unit.interestedLeads}
+            </span>
             <span className={cn("text-[9px] tabular-nums", s.sub)}>₹{(unit.value / 100000).toFixed(1)}L</span>
           </div>
         </div>
