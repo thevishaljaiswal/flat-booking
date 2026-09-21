@@ -1,4 +1,4 @@
-import { buildings } from "@/data/buildingData";
+import { useUnits } from "@/context/UnitsContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FloorUnits from "@/components/FloorUnits";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Building2, Filter } from "lucide-react";
 
 const Index = () => {
+  const { towers: buildings } = useUnits();
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
@@ -76,6 +77,7 @@ const Index = () => {
                   <SelectItem value="available">Available</SelectItem>
                   <SelectItem value="booked">Booked</SelectItem>
                   <SelectItem value="hold">On Hold</SelectItem>
+                  <SelectItem value="allocated">Allocated</SelectItem>
                 </SelectContent>
               </Select>
             </div>
