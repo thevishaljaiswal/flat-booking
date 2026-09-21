@@ -1,9 +1,19 @@
+export type UnitStatus = "booked" | "available" | "hold" | "allocated";
+
+export type Customer = {
+  name: string;
+  mobile: string;
+  email: string;
+};
+
 export type UnitType = {
   unitNumber: string;
   type: "2BHK" | "3BHK";
   carpetArea: number;
   value: number;
-  status: "booked" | "available" | "hold";
+  status: UnitStatus;
+  holdExpiresAt?: number;
+  customer?: Customer;
 };
 
 export type FloorType = {
@@ -23,7 +33,9 @@ const generateUnits = (floorNumber: number, towerId: string): UnitType[] => {
     type: Math.random() > 0.5 ? "2BHK" : "3BHK",
     carpetArea: Math.random() > 0.5 ? 1200 : 1500,
     value: Math.random() > 0.5 ? 7500000 : 9000000,
-    status: ["booked", "available", "hold"][Math.floor(Math.random() * 3)] as "booked" | "available" | "hold",
+    status: (["booked", "available", "available", "allocated"][
+      Math.floor(Math.random() * 4)
+    ]) as UnitStatus,
   }));
 };
 
@@ -43,3 +55,5 @@ export const buildings: TowerType[] = [
   generateTower("T2", "Tower 2"),
   generateTower("T3", "Tower 3"),
 ];
+
+export const HOLD_DURATION_MS = 15 * 60 * 1000;

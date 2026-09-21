@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CostSheet from "./pages/CostSheet";
+import { UnitsProvider } from "./context/UnitsContext";
 
 const queryClient = new QueryClient();
 
@@ -14,13 +15,15 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/cost-sheet" element={<CostSheet />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <UnitsProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/cost-sheet" element={<CostSheet />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </UnitsProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
