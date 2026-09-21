@@ -14,6 +14,7 @@ export type UnitType = {
   status: UnitStatus;
   holdExpiresAt?: number;
   customer?: Customer;
+  interestedLeads: number;
 };
 
 export type FloorType = {
@@ -36,6 +37,7 @@ const generateUnits = (floorNumber: number, towerId: string): UnitType[] => {
     status: (["booked", "available", "available", "allocated"][
       Math.floor(Math.random() * 4)
     ]) as UnitStatus,
+    interestedLeads: 1 + Math.floor(Math.random() * 24),
   }));
 };
 
