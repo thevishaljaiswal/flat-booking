@@ -75,6 +75,23 @@ export default {
 						soft: 'hsl(var(--status-allocated-soft))'
 					}
 				},
+				benefit: {
+					scheme: {
+						DEFAULT: 'hsl(var(--benefit-scheme))',
+						foreground: 'hsl(var(--benefit-scheme-foreground))',
+						soft: 'hsl(var(--benefit-scheme-soft))'
+					},
+					offer: {
+						DEFAULT: 'hsl(var(--benefit-offer))',
+						foreground: 'hsl(var(--benefit-offer-foreground))',
+						soft: 'hsl(var(--benefit-offer-soft))'
+					},
+					voucher: {
+						DEFAULT: 'hsl(var(--benefit-voucher))',
+						foreground: 'hsl(var(--benefit-voucher-foreground))',
+						soft: 'hsl(var(--benefit-voucher-soft))'
+					}
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
