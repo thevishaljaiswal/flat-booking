@@ -32,6 +32,20 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
+    --status-available: 158 64% 36%;
+    --status-available-foreground: 160 84% 20%;
+    --status-available-soft: 152 81% 96%;
+    --status-available-contrast: 0 0% 100%;
+    --status-booked: 347 77% 50%;
+    --status-booked-foreground: 346 75% 30%;
+    --status-booked-soft: 356 100% 97%;
+    --status-hold: 38 92% 46%;
+    --status-hold-foreground: 32 95% 25%;
+    --status-hold-soft: 48 100% 96%;
+    --status-allocated: 221 83% 53%;
+    --status-allocated-foreground: 224 76% 36%;
+    --status-allocated-soft: 214 100% 97%;
+
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
@@ -79,6 +93,19 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    --status-available: 158 64% 45%;
+    --status-available-foreground: 152 70% 82%;
+    --status-available-soft: 158 35% 14%;
+    --status-available-contrast: 160 84% 8%;
+    --status-booked: 347 77% 60%;
+    --status-booked-foreground: 355 85% 84%;
+    --status-booked-soft: 346 40% 15%;
+    --status-hold: 38 92% 55%;
+    --status-hold-foreground: 48 96% 82%;
+    --status-hold-soft: 32 45% 15%;
+    --status-allocated: 217 91% 65%;
+    --status-allocated-foreground: 214 95% 85%;
+    --status-allocated-soft: 224 43% 16%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
