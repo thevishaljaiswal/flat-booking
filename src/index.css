@@ -45,6 +45,15 @@
     --status-allocated: 221 83% 53%;
     --status-allocated-foreground: 224 76% 36%;
     --status-allocated-soft: 214 100% 97%;
+    --benefit-scheme: 221 83% 53%;
+    --benefit-scheme-foreground: 224 76% 36%;
+    --benefit-scheme-soft: 214 100% 97%;
+    --benefit-offer: 38 92% 46%;
+    --benefit-offer-foreground: 32 95% 25%;
+    --benefit-offer-soft: 48 100% 96%;
+    --benefit-voucher: 158 64% 36%;
+    --benefit-voucher-foreground: 160 84% 20%;
+    --benefit-voucher-soft: 152 81% 96%;
 
     --radius: 0.5rem;
 
@@ -106,6 +115,15 @@
     --status-allocated: 217 91% 65%;
     --status-allocated-foreground: 214 95% 85%;
     --status-allocated-soft: 224 43% 16%;
+    --benefit-scheme: 217 91% 65%;
+    --benefit-scheme-foreground: 214 95% 85%;
+    --benefit-scheme-soft: 224 43% 16%;
+    --benefit-offer: 38 92% 55%;
+    --benefit-offer-foreground: 48 96% 82%;
+    --benefit-offer-soft: 32 45% 15%;
+    --benefit-voucher: 158 64% 45%;
+    --benefit-voucher-foreground: 152 70% 82%;
+    --benefit-voucher-soft: 158 35% 14%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

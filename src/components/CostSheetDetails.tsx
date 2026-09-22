@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import {
   Building2,
@@ -165,12 +166,9 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
       </Card>
 
       <Tabs defaultValue="costsheet" className="w-full">
-        <TabsList className="grid w-full max-w-2xl grid-cols-3">
+        <TabsList className="grid w-full max-w-lg grid-cols-2">
           <TabsTrigger value="costsheet" className="gap-2">
             <Receipt className="h-4 w-4" /> Cost Sheet
-          </TabsTrigger>
-          <TabsTrigger value="schemes" className="gap-2">
-            <Sparkles className="h-4 w-4" /> Schemes & Offers
           </TabsTrigger>
           <TabsTrigger value="schedule" className="gap-2">
             <CalendarDays className="h-4 w-4" /> Payment Schedule
@@ -287,50 +285,56 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
 
-        {/* Schemes & Offers */}
-        <TabsContent value="schemes" className="mt-4 space-y-4">
+          <div className="mt-4 space-y-4">
           {/* Payment schemes */}
-          <Card>
+          <Card className="border-benefit-scheme/25">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" /> Payment Schemes
+                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-benefit-scheme-soft text-benefit-scheme-foreground">
+                  <Sparkles className="h-4 w-4" />
+                </span>
+                Payment Schemes
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                 {SCHEMES.map((s) => {
                   const active = s.id === schemeId;
+                  const saving = costs.grossFlatCost * (s.discountPct / 100);
                   return (
-                    <button
+                    <Button
                       key={s.id}
                       type="button"
+                      variant="outline"
                       onClick={() => setSchemeId(s.id)}
-                      className={`text-left rounded-xl border p-3 transition-all ${
+                      className={`h-auto min-h-32 whitespace-normal justify-start text-left rounded-lg p-3 transition-all ${
                         active
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/30 shadow-sm"
-                          : "hover:border-primary/40 hover:bg-muted/50"
+                          ? "border-benefit-scheme bg-benefit-scheme-soft ring-2 ring-benefit-scheme/25 shadow-sm"
+                          : "border-benefit-scheme/25 bg-benefit-scheme-soft/40 hover:border-benefit-scheme/60 hover:bg-benefit-scheme-soft"
                       }`}
                     >
+                      <div className="w-full">
                       <div className="flex items-start justify-between gap-2">
                         <p className="text-sm font-semibold leading-tight">{s.name}</p>
-                        {active && <Check className="h-4 w-4 text-primary shrink-0" />}
+                        {active && <Check className="h-4 w-4 text-benefit-scheme shrink-0" />}
                       </div>
                       <p className="text-[11px] text-muted-foreground mt-1">{s.tagline}</p>
-                      {s.discountPct > 0 && (
-                        <Badge variant="secondary" className="mt-2 text-[10px]">
-                          {s.discountPct}% price benefit
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5 text-benefit-scheme-foreground">
+                        <Badge className="border-benefit-scheme/25 bg-benefit-scheme-soft text-benefit-scheme-foreground hover:bg-benefit-scheme-soft">
+                          {s.discountPct}% off
                         </Badge>
-                      )}
+                        <span className="text-xs font-bold tabular-nums">Save {formatINR(saving)}</span>
+                      </div>
                       <ul className="mt-2 space-y-0.5">
                         {s.benefits.map((b) => (
                           <li key={b} className="text-[11px] text-muted-foreground flex gap-1">
-                            <span className="text-primary">•</span> {b}
+                            <span className="text-benefit-scheme">•</span> {b}
                           </li>
                         ))}
                       </ul>
-                    </button>
+                      </div>
+                    </Button>
                   );
                 })}
               </div>
@@ -338,34 +342,44 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
           </Card>
 
           {/* Offers */}
-          <Card>
+          <Card className="border-benefit-offer/25">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Clock className="h-4 w-4 text-primary" /> Limited Period Booking Offers
+                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-benefit-offer-soft text-benefit-offer-foreground">
+                  <Clock className="h-4 w-4" />
+                </span>
+                Limited Period Booking Offers
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {OFFERS.map((o) => {
                   const active = o.id === offerId;
+                  const saving = costs.grossFlatCost * (o.discountPct / 100);
                   return (
-                    <button
+                    <Button
                       key={o.id}
                       type="button"
+                      variant="outline"
                       onClick={() => setOfferId(active ? null : o.id)}
-                      className={`rounded-xl border p-3 text-left transition-all ${
+                      className={`h-auto min-h-24 whitespace-normal justify-start rounded-lg p-3 text-left transition-all ${
                         active
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/30 shadow-sm"
-                          : "hover:border-primary/40 hover:bg-muted/50"
+                          ? "border-benefit-offer bg-benefit-offer-soft ring-2 ring-benefit-offer/25 shadow-sm"
+                          : "border-benefit-offer/25 bg-benefit-offer-soft/40 hover:border-benefit-offer/60 hover:bg-benefit-offer-soft"
                       }`}
                     >
+                      <div className="w-full">
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold">{o.name}</p>
-                        {active && <Check className="h-4 w-4 text-primary" />}
+                        {active && <Check className="h-4 w-4 text-benefit-offer" />}
                       </div>
                       <p className="text-[11px] text-muted-foreground mt-0.5">Valid: {o.window}</p>
-                      <p className="text-lg font-bold text-primary mt-1 tabular-nums">{o.discountPct}% off</p>
-                    </button>
+                      <div className="mt-1 flex items-baseline justify-between gap-2 text-benefit-offer-foreground">
+                        <p className="text-lg font-bold tabular-nums">{o.discountPct}% off</p>
+                        <p className="text-xs font-bold tabular-nums">Save {formatINR(saving)}</p>
+                      </div>
+                      </div>
+                    </Button>
                   );
                 })}
               </div>
@@ -376,10 +390,13 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
           </Card>
 
           {/* Vouchers */}
-          <Card>
+          <Card className="border-benefit-voucher/25">
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <Gift className="h-4 w-4 text-primary" /> Vouchers
+                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-benefit-voucher-soft text-benefit-voucher-foreground">
+                  <Gift className="h-4 w-4" />
+                </span>
+                Vouchers
               </CardTitle>
               <Badge variant="outline" className="text-xs">
                 Selected value {formatINR(voucherValue)}
@@ -391,34 +408,38 @@ const CostSheetDetails = ({ unit }: CostSheetDetailsProps) => {
                   const active = voucherIds.includes(v.id);
                   const Icon = VOUCHER_ICONS[v.id] ?? Gift;
                   return (
-                    <button
+                    <Button
                       key={v.id}
                       type="button"
+                      variant="outline"
                       onClick={() => toggleVoucher(v.id)}
-                      className={`relative text-left rounded-xl border border-dashed p-3 transition-all ${
+                      className={`relative h-auto min-h-32 whitespace-normal justify-start text-left rounded-lg border-dashed p-3 transition-all ${
                         active
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/30"
-                          : "hover:border-primary/40 hover:bg-muted/50"
+                          ? "border-benefit-voucher bg-benefit-voucher-soft ring-2 ring-benefit-voucher/25"
+                          : "border-benefit-voucher/30 bg-benefit-voucher-soft/40 hover:border-benefit-voucher/60 hover:bg-benefit-voucher-soft"
                       }`}
                     >
+                      <div className="w-full">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
+                        <div className="h-8 w-8 rounded-lg bg-benefit-voucher-soft text-benefit-voucher-foreground flex items-center justify-center">
                           <Icon className="h-4 w-4" />
                         </div>
                         <p className="text-sm font-semibold leading-tight">{v.name}</p>
                       </div>
                       <p className="text-[11px] text-muted-foreground mt-2">{v.detail}</p>
-                      <p className="text-sm font-bold text-primary mt-1 tabular-nums">{formatINR(v.value)}</p>
+                      <p className="text-sm font-bold text-benefit-voucher-foreground mt-1 tabular-nums">Benefit {formatINR(v.value)}</p>
                       <p className="text-[10px] text-muted-foreground mt-1 italic">{v.condition}</p>
                       {active && (
-                        <Check className="h-4 w-4 text-primary absolute top-3 right-3" />
+                        <Check className="h-4 w-4 text-benefit-voucher absolute top-3 right-3" />
                       )}
-                    </button>
+                      </div>
+                    </Button>
                   );
                 })}
               </div>
             </CardContent>
           </Card>
+          </div>
         </TabsContent>
 
         {/* Payment Schedule */}
