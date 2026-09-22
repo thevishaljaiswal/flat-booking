@@ -52,6 +52,29 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				status: {
+					available: {
+						DEFAULT: 'hsl(var(--status-available))',
+						foreground: 'hsl(var(--status-available-foreground))',
+						soft: 'hsl(var(--status-available-soft))',
+						contrast: 'hsl(var(--status-available-contrast))'
+					},
+					booked: {
+						DEFAULT: 'hsl(var(--status-booked))',
+						foreground: 'hsl(var(--status-booked-foreground))',
+						soft: 'hsl(var(--status-booked-soft))'
+					},
+					hold: {
+						DEFAULT: 'hsl(var(--status-hold))',
+						foreground: 'hsl(var(--status-hold-foreground))',
+						soft: 'hsl(var(--status-hold-soft))'
+					},
+					allocated: {
+						DEFAULT: 'hsl(var(--status-allocated))',
+						foreground: 'hsl(var(--status-allocated-foreground))',
+						soft: 'hsl(var(--status-allocated-soft))'
+					}
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

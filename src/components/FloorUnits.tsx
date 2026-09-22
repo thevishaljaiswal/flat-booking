@@ -9,11 +9,11 @@ const FloorUnits = ({ floor }: FloorUnitsProps) => {
   if (floor.units.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-2 mb-1.5">
-      <div className="w-12 shrink-0 text-[10px] font-bold text-slate-600 bg-slate-100 rounded px-1.5 py-1 text-center">
-        F{floor.floorNumber}
+    <div className="grid grid-cols-[4.75rem_minmax(0,1fr)] items-stretch gap-2 mb-2">
+      <div className="flex min-h-16 items-center justify-center rounded-md border bg-secondary px-2 text-center text-xs font-bold text-secondary-foreground">
+        Floor {floor.floorNumber}
       </div>
-      <div className="grid grid-cols-4 gap-1.5 flex-1">
+      <div className="grid min-w-0 grid-cols-2 gap-2 lg:grid-cols-4">
         {floor.units.map((unit) => (
           <UnitCard key={unit.unitNumber} unit={unit} />
         ))}
